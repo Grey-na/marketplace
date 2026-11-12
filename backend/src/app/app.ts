@@ -10,6 +10,8 @@ import { AppConfig } from "../config/AppConfig";
 
 const app: Application = express()
 
+app.use("/assets", express.static(AppConfig.uploadDir))
+
 // behind a reverse proxy (production) the real user IP comes from X-Forwarded-For.
 // Do NOT enable this on a plain local server, or users can fake their IP.
 if(AppConfig.isProduction){

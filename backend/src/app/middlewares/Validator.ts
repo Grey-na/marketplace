@@ -1,12 +1,16 @@
 import { type Request, type Response, type NextFunction } from "express";
 import { type ZodType } from "zod";
 import ApiError from "../errors/ApiError";
+import { removeUploadedFiles } from "../../utilities/helper";
 
 export const validateBody = (schema: ZodType) => {
-    return (req: Request, _: Response, next: NextFunction) => {
+    return async (req: Request, _: Response, next: NextFunction) => {
         const result = schema.safeParse(req.body);
 
         if(!result.success){
+            // multer already saved the file before we validated, so delete it now
+            await removeUploadedFiles(req);
+
             // { fieldName: "message" } so the frontend can show each error under its input
             const errBag: Record<string, string> = {};
             result.error.issues.forEach((issue) => {

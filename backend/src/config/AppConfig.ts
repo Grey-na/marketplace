@@ -12,6 +12,7 @@ const required = (name: string): string => {
 
 export const AppConfig = {
     port: Number(process.env.PORT) || 3005,
+    uploadDir: "public/uploads/images",
     isProduction: process.env.NODE_ENV === "production",
     assetsUrl: required("ASSETS_URL"),
     jwtSecret: required("JWT_SECRET"),
