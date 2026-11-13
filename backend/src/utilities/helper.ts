@@ -53,7 +53,11 @@ export const removeUploadedFiles = async (req: Request) => {
         files.push(req.file)
     }
     if(Array.isArray(req.files)){
+        // upload.array("images")
         files.push(...req.files)
+    }else if(req.files){
+        // upload.fields([{ name: "logo" }, { name: "cover" }]) gives { logo: [file], cover: [file] }
+        Object.values(req.files).forEach((list) => files.push(...list))
     }
     await Promise.all(files.map((file) => safeUnlink(file.path)))
 }
