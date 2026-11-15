@@ -6,6 +6,7 @@ import ApiError from "../errors/ApiError";
 import { type IUserDetail } from "../../types/User";
 import { mapImage, removeImage, removeUploadedFiles } from "../../utilities/helper";
 import { escapeRegex, getPagination } from "../../utilities/query";
+import ProductModel from "../model/ProductModel";
 
 export default class CategoryController{
     /**
@@ -155,7 +156,10 @@ export default class CategoryController{
      */
     async deleteCategoryDetail(req: Request, res: Response, next: NextFunction){
         try{
-            // TODO (Step 5): refuse to delete a category that still has products
+            // a category that still has products cannot be deleted
+            if(await ProductModel.exists({ category: req.params.categoryId as string })){
+                throw new ApiError("This category still has products. Move or delete them first.", 400)
+            }
             const category = await CategoryModel.findByIdAndDelete(req.params.categoryId as string);
             if(!category){
                 throw new ApiError("Category not found", 404)
