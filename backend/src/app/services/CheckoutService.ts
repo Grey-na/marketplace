@@ -9,6 +9,7 @@ import ApiError from "../errors/ApiError";
 import { type CheckoutInput } from "../request/OrderRequest";
 import { DELIVERY_CHARGE_PAISA } from "../../types/Order";
 import { isBuyable } from "../../utilities/catalog";
+import { logInteraction } from "../services/InteractionService";
 
 const makeOrderNo = () => {
     const day = new Date().toISOString().slice(0, 10).replaceAll("-", "");
@@ -140,6 +141,10 @@ export const placeOrder = async (userId: string, input: CheckoutInput) => {
 
         // 4. the cart is done
         await CartModel.deleteOne({ user: userId });
+                // the data for the recommendation engine: what was bought
+        lines.forEach((line) => {
+        void logInteraction({ user: userId, product: line.product._id, shop: line.product.shop, type: "purchase" })
+        })
 
         const shopOrders = await ShopOrderModel.find({ order: order._id })
             .populate("shop", "_id name slug")

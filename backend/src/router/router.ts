@@ -17,8 +17,12 @@ import { MAX_IMAGES } from "../types/Product";
 import CartController from "../app/controllers/CartController";
 import OrderController from "../app/controllers/OrderController";
 import { CartAddSchema, CartUpdateSchema } from "../app/request/CartRequest";
-
 import { CheckoutSchema, ShopOrderStatusSchema, CustomerCancelSchema } from "../app/request/OrderRequest";
+import OptionalAuth from "../app/middlewares/OptionalAuth";
+import EngagementController from "../app/controllers/EngagementController";
+import ReviewController from "../app/controllers/ReviewController";
+import InteractionController from "../app/controllers/InteractionController";
+import { ReviewCreateSchema, ReviewUpdateSchema, TrackSchema } from "../app/request/EngagementRequest";
 
 const router: Router = Router();
 
@@ -40,6 +44,9 @@ const authCtrl = new AuthController();
 const categoryCtrl = new CategoryController();
 const shopCtrl = new ShopController();
 const productCtrl = new ProductController();
+const engagementCtrl = new EngagementController();
+const reviewCtrl = new ReviewController();
+const interactionCtrl = new InteractionController();
 
 // two image fields in one request: logo and cover
 const shopImages = Uploader("/shops").fields([
@@ -65,6 +72,8 @@ router.get("/shops", shopCtrl.getShopListForHome);
 router.get("/shops/:slug", shopCtrl.getShopDetailBySlug);
 router.get("/products", productCtrl.getProductListForHome);
 router.get("/products/:slug", productCtrl.getProductDetailBySlug);
+router.get("/products/:slug/reviews", reviewCtrl.getProductReviews);
+router.post("/interactions", OptionalAuth(), validateBody(TrackSchema), interactionCtrl.track);
 
 //Seller: my shop (the upload runs AFTER the login and role check)
 sellerRouter.get("/shop", shopCtrl.getMyShop);
@@ -113,6 +122,16 @@ customerRouter.post("/checkout", validateBody(CheckoutSchema), orderCtrl.checkou
 customerRouter.get("/orders", orderCtrl.getMyOrders);
 customerRouter.get("/orders/:orderId", orderCtrl.getMyOrderDetail);
 customerRouter.post("/shop-orders/:shopOrderId/cancel", validateBody(CustomerCancelSchema), orderCtrl.cancelMyShopOrder);
+//Customer: wishlist, follows and reviews
+customerRouter.get("/wishlist", engagementCtrl.getWishlist);
+customerRouter.post("/wishlist/:productId", engagementCtrl.addToWishlist);
+customerRouter.delete("/wishlist/:productId", engagementCtrl.removeFromWishlist);
+customerRouter.get("/follows", engagementCtrl.getMyFollows);
+customerRouter.post("/shops/:slug/follow", engagementCtrl.followShop);
+customerRouter.delete("/shops/:slug/follow", engagementCtrl.unfollowShop);
+customerRouter.post("/products/:productId/reviews", validateBody(ReviewCreateSchema), reviewCtrl.createReview);
+customerRouter.patch("/reviews/:reviewId", validateBody(ReviewUpdateSchema), reviewCtrl.updateMyReview);
+customerRouter.delete("/reviews/:reviewId", reviewCtrl.deleteMyReview);
 
 
 

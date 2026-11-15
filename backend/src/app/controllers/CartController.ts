@@ -7,6 +7,7 @@ import ApiError from "../errors/ApiError";
 import { type IUserDetail } from "../../types/User";
 import { DELIVERY_CHARGE_PAISA, MAX_CART_ITEMS, MAX_QTY_PER_ITEM } from "../../types/Order";
 import { isBuyable } from "../../utilities/catalog";
+import { logInteraction } from "../services/InteractionService";
 
 /**
  * @description The cart for the screen: every line with live price and stock, and the totals
@@ -133,6 +134,7 @@ export default class CartController{
                 cart.items.push({ product: product._id, quantity: quantity })
             }
             await cart.save()
+            void logInteraction({ user: user._id, product: product._id, shop: product.shop, type: "cart" })
 
             res.status(201).json({
                 result: await buildCartView(user._id),

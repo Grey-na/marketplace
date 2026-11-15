@@ -81,7 +81,7 @@ const assertPriceRule = (price: number, discount: number) => {
 /**
  * @description The base rule for what visitors can see: active, not blocked, and the shop is approved
  */
-const getVisibleBase = async () => {
+export const getVisibleBase = async () => {
     const approvedShopIds = await ShopModel.distinct("_id", { status: "approved" });
     const filter: Record<string, unknown> = {
         status: "active",
