@@ -14,6 +14,10 @@ import { CategoryCreateSchema, CategoryUpdateSchema } from "../app/request/Categ
 import { ShopCreateSchema, ShopUpdateSchema, ShopReviewSchema } from "../app/request/ShopRequest";
 import { ProductCreateSchema, ProductUpdateSchema, ProductReviewSchema } from "../app/request/ProductRequest";
 import { MAX_IMAGES } from "../types/Product";
+import CartController from "../app/controllers/CartController";
+import OrderController from "../app/controllers/OrderController";
+import { CartAddSchema, CartUpdateSchema } from "../app/request/CartRequest";
+import { CheckoutSchema } from "../app/request/OrderRequest";
 
 const router: Router = Router();
 
@@ -23,6 +27,12 @@ const adminRouter: Router = Router();
 adminRouter.use(Auth(), Allow("admin"));
 const sellerRouter: Router = Router();
 sellerRouter.use(Auth(), Allow("seller"));
+
+const customerRouter: Router = Router();
+customerRouter.use(Auth(), Allow("customer"));
+
+const cartCtrl = new CartController();
+const orderCtrl = new OrderController();
 
 const healthCtrl = new HealthCheckController();
 const authCtrl = new AuthController();
@@ -86,7 +96,19 @@ adminRouter.get("/products", productCtrl.getAllProductsForAdmin);
 adminRouter.get("/products/:productId", productCtrl.getProductDetailForAdmin);
 adminRouter.patch("/products/:productId", validateBody(ProductReviewSchema), productCtrl.reviewProduct);
 
+//Customer: cart, checkout and orders
+customerRouter.get("/cart", cartCtrl.getCart);
+customerRouter.post("/cart/items", validateBody(CartAddSchema), cartCtrl.addItem);
+customerRouter.patch("/cart/items/:productId", validateBody(CartUpdateSchema), cartCtrl.updateItem);
+customerRouter.delete("/cart/items/:productId", cartCtrl.removeItem);
+customerRouter.delete("/cart", cartCtrl.clearCart);
+customerRouter.post("/checkout", validateBody(CheckoutSchema), orderCtrl.checkout);
+customerRouter.get("/orders", orderCtrl.getMyOrders);
+customerRouter.get("/orders/:orderId", orderCtrl.getMyOrderDetail);
+
+
 router.use("/seller", sellerRouter);
 router.use("/admin", adminRouter);
+router.use("/customer", customerRouter);
 
 export default router;
