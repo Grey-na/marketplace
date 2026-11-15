@@ -17,7 +17,8 @@ import { MAX_IMAGES } from "../types/Product";
 import CartController from "../app/controllers/CartController";
 import OrderController from "../app/controllers/OrderController";
 import { CartAddSchema, CartUpdateSchema } from "../app/request/CartRequest";
-import { CheckoutSchema } from "../app/request/OrderRequest";
+
+import { CheckoutSchema, ShopOrderStatusSchema, CustomerCancelSchema } from "../app/request/OrderRequest";
 
 const router: Router = Router();
 
@@ -78,6 +79,10 @@ sellerRouter.patch("/products/:productId", validateBody(ProductUpdateSchema), pr
 sellerRouter.delete("/products/:productId", productCtrl.deleteMyProduct);
 sellerRouter.post("/products/:productId/images", productImages, productCtrl.addProductImages);
 sellerRouter.delete("/products/:productId/images/:filename", productCtrl.deleteProductImage);
+sellerRouter.get("/orders", orderCtrl.getSellerOrders);
+sellerRouter.get("/orders/:shopOrderId", orderCtrl.getSellerOrderDetail);
+sellerRouter.patch("/orders/:shopOrderId/status", validateBody(ShopOrderStatusSchema), orderCtrl.updateShopOrderStatus);
+
 
 //Admin: categories
 adminRouter.post("/categories", Uploader("/categories").single("image"), validateBody(CategoryCreateSchema), categoryCtrl.createCategory);
@@ -95,6 +100,8 @@ adminRouter.patch("/shops/:shopId", validateBody(ShopReviewSchema), shopCtrl.rev
 adminRouter.get("/products", productCtrl.getAllProductsForAdmin);
 adminRouter.get("/products/:productId", productCtrl.getProductDetailForAdmin);
 adminRouter.patch("/products/:productId", validateBody(ProductReviewSchema), productCtrl.reviewProduct);
+adminRouter.get("/orders", orderCtrl.getAllOrdersForAdmin);
+adminRouter.get("/orders/:orderId", orderCtrl.getOrderDetailForAdmin);
 
 //Customer: cart, checkout and orders
 customerRouter.get("/cart", cartCtrl.getCart);
@@ -105,6 +112,8 @@ customerRouter.delete("/cart", cartCtrl.clearCart);
 customerRouter.post("/checkout", validateBody(CheckoutSchema), orderCtrl.checkout);
 customerRouter.get("/orders", orderCtrl.getMyOrders);
 customerRouter.get("/orders/:orderId", orderCtrl.getMyOrderDetail);
+customerRouter.post("/shop-orders/:shopOrderId/cancel", validateBody(CustomerCancelSchema), orderCtrl.cancelMyShopOrder);
+
 
 
 router.use("/seller", sellerRouter);

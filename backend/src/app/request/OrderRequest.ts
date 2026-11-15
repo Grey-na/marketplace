@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PAYMENT_METHODS } from "../../types/Order";
+import { PAYMENT_METHODS, DELIVERY_PROVIDERS } from "../../types/Order";
 
 export const CheckoutSchema = z.object({
     address: z.object({
@@ -13,3 +13,20 @@ export const CheckoutSchema = z.object({
     note: z.string().trim().max(300, "Note must be at most 300 characters").optional(),
 })
 export type CheckoutInput = z.infer<typeof CheckoutSchema>;
+
+// seller: move a parcel to the next status
+export const ShopOrderStatusSchema = z.object({
+    status: z.enum(["confirmed", "packed", "shipped", "delivered", "cancelled"], "Invalid status"),
+    note: z.string().trim().max(300, "Note must be at most 300 characters").optional(),
+    // only used when the status is "shipped"
+    trackingNo: z.string().trim().max(60, "Tracking number is too long").optional(),
+    provider: z.enum(DELIVERY_PROVIDERS, "Provider must be seller, in_house or third_party").optional(),
+}).refine((d) => d.status !== "cancelled" || !!d.note, {
+    path: ["note"],
+    message: "Please give a reason for cancelling",
+})
+
+// customer: cancel a parcel
+export const CustomerCancelSchema = z.object({
+    reason: z.string().trim().max(300, "Reason must be at most 300 characters").optional(),
+})

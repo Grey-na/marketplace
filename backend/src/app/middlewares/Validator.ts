@@ -5,7 +5,8 @@ import { removeUploadedFiles } from "../../utilities/helper";
 
 export const validateBody = (schema: ZodType) => {
     return async (req: Request, _: Response, next: NextFunction) => {
-        const result = schema.safeParse(req.body);
+        const result = schema.safeParse(req.body ?? {});
+      
 
         if(!result.success){
             // multer already saved the file before we validated, so delete it now
