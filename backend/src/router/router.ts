@@ -23,6 +23,7 @@ import EngagementController from "../app/controllers/EngagementController";
 import ReviewController from "../app/controllers/ReviewController";
 import InteractionController from "../app/controllers/InteractionController";
 import { ReviewCreateSchema, ReviewUpdateSchema, TrackSchema } from "../app/request/EngagementRequest";
+import RecommendationController from "../app/controllers/RecommendationController";
 
 const router: Router = Router();
 
@@ -47,6 +48,7 @@ const productCtrl = new ProductController();
 const engagementCtrl = new EngagementController();
 const reviewCtrl = new ReviewController();
 const interactionCtrl = new InteractionController();
+const recommendationCtrl = new RecommendationController();
 
 // two image fields in one request: logo and cover
 const shopImages = Uploader("/shops").fields([
@@ -73,6 +75,8 @@ router.get("/shops/:slug", shopCtrl.getShopDetailBySlug);
 router.get("/products", productCtrl.getProductListForHome);
 router.get("/products/:slug", productCtrl.getProductDetailBySlug);
 router.get("/products/:slug/reviews", reviewCtrl.getProductReviews);
+router.get("/recommendations/home", OptionalAuth(), recommendationCtrl.getHome);
+router.get("/products/:slug/similar", recommendationCtrl.getSimilar);
 router.post("/interactions", OptionalAuth(), validateBody(TrackSchema), interactionCtrl.track);
 
 //Seller: my shop (the upload runs AFTER the login and role check)
