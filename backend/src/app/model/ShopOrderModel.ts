@@ -41,6 +41,13 @@ const ShopOrderSchema = new Schema({
         at: { type: Date, default: Date.now },
         note: String,
     }],
+        // set when a PAID online parcel is cancelled. The admin refunds it in the eSewa merchant portal
+    refund: {
+        status: { type: String, enum: ["none", "pending", "refunded"], default: "none" },
+        amount: { type: Number, default: 0 },
+        note: { type: String, default: null },
+        refundedAt: { type: Date, default: null },
+    },
 }, {
     timestamps: true,
 });

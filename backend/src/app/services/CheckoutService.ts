@@ -10,6 +10,8 @@ import { type CheckoutInput } from "../request/OrderRequest";
 import { DELIVERY_CHARGE_PAISA } from "../../types/Order";
 import { isBuyable } from "../../utilities/catalog";
 import { logInteraction } from "../services/InteractionService";
+import PaymentModel from "../model/PaymentModel";
+import { createEsewaPayment } from "./PaymentService";
 
 const makeOrderNo = () => {
     const day = new Date().toISOString().slice(0, 10).replaceAll("-", "");
@@ -87,6 +89,8 @@ export const placeOrder = async (userId: string, input: CheckoutInput) => {
             }
             reserved.push({ productId: line.product._id, quantity: line.quantity })
         }
+        const online = input.paymentMethod !== "cod";
+        const firstStatus = online ? "awaiting_payment" : "pending";
 
         // 3. one ShopOrder for each shop
         const byShop = new Map<string, typeof lines>();
@@ -129,6 +133,7 @@ export const placeOrder = async (userId: string, input: CheckoutInput) => {
             deliveryCharge: deliveryCharge,
             total: subtotal + deliveryCharge,
             payment: { method: input.paymentMethod, status: "pending" },
+            status: online ? "awaiting_payment" : "placed",
         });
         createdOrderId = order._id;
 
@@ -136,26 +141,34 @@ export const placeOrder = async (userId: string, input: CheckoutInput) => {
             ...data,
             order: order._id,
             user: new mongoose.Types.ObjectId(userId),
-            timeline: [{ status: "pending", at: new Date(), note: "Order placed" }],
+            status: firstStatus,
+            timeline: [{ status: firstStatus, at: new Date(), note: online ? "Waiting for payment" : "Order placed" }],
         })));
+
+                // the payment attempt the customer will be sent to
+        const payment = online ? await createEsewaPayment(order) : null;
 
         // 4. the cart is done
         await CartModel.deleteOne({ user: userId });
-                // the data for the recommendation engine: what was bought
-        lines.forEach((line) => {
-        void logInteraction({ user: userId, product: line.product._id, shop: line.product.shop, type: "purchase" })
-        })
+
+        // purchase events: for cash on delivery now, for online payments once the payment is confirmed
+        if(!online){
+            lines.forEach((line) => {
+                void logInteraction({ user: userId, product: line.product._id, shop: line.product.shop, type: "purchase" })
+            })
+        }
 
         const shopOrders = await ShopOrderModel.find({ order: order._id })
             .populate("shop", "_id name slug")
             .lean();
-        return { order: order.toObject(), shopOrders: shopOrders };
+        return { order: order.toObject(), shopOrders: shopOrders, payment: payment };
 
     }catch(error){
         // undo: delete what was created, and give the stock back
         if(createdOrderId){
             await ShopOrderModel.deleteMany({ order: createdOrderId });
             await OrderModel.deleteOne({ _id: createdOrderId });
+            await PaymentModel.deleteMany({ order: createdOrderId });
         }
         await releaseStock(reserved);
         throw error;

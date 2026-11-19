@@ -6,8 +6,8 @@ export const MAX_CART_ITEMS = 30;
 // The admin delivery settings will replace this later
 export const DELIVERY_CHARGE_PAISA = 10000;
 
-export const PAYMENT_METHODS = ["cod"] as const;
-export const SHOP_ORDER_STATUSES = ["pending", "confirmed", "packed", "shipped", "delivered", "cancelled"] as const;
+export const PAYMENT_METHODS = ["cod", "esewa"] as const;
+export const SHOP_ORDER_STATUSES = ["awaiting_payment", "pending", "confirmed", "packed", "shipped", "delivered", "cancelled"] as const;
 export const DELIVERY_PROVIDERS = ["seller", "in_house", "third_party"] as const;
 
 // the status changes each person may make: "from" status -> the statuses it can move to
@@ -22,4 +22,9 @@ export const SELLER_TRANSITIONS: Record<string, string[]> = {
 export const CUSTOMER_TRANSITIONS: Record<string, string[]> = {
     pending: ["cancelled"],
     confirmed: ["cancelled"],
+};
+
+// changes the SYSTEM makes (for example, cancelling an order that was never paid)
+export const SYSTEM_TRANSITIONS: Record<string, string[]> = {
+    awaiting_payment: ["cancelled"],
 };

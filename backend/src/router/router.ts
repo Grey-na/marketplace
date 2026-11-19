@@ -24,6 +24,9 @@ import ReviewController from "../app/controllers/ReviewController";
 import InteractionController from "../app/controllers/InteractionController";
 import { ReviewCreateSchema, ReviewUpdateSchema, TrackSchema } from "../app/request/EngagementRequest";
 import RecommendationController from "../app/controllers/RecommendationController";
+import PaymentController from "../app/controllers/PaymentController";
+import { RefundDoneSchema } from "../app/request/OrderRequest";   // add to your existing OrderRequest import
+
 
 const router: Router = Router();
 
@@ -49,6 +52,7 @@ const engagementCtrl = new EngagementController();
 const reviewCtrl = new ReviewController();
 const interactionCtrl = new InteractionController();
 const recommendationCtrl = new RecommendationController();
+const paymentCtrl = new PaymentController();
 
 // two image fields in one request: logo and cover
 const shopImages = Uploader("/shops").fields([
@@ -78,6 +82,10 @@ router.get("/products/:slug/reviews", reviewCtrl.getProductReviews);
 router.get("/recommendations/home", OptionalAuth(), recommendationCtrl.getHome);
 router.get("/products/:slug/similar", recommendationCtrl.getSimilar);
 router.post("/interactions", OptionalAuth(), validateBody(TrackSchema), interactionCtrl.track);
+router.get("/payments/esewa/pay/:transactionUuid", paymentCtrl.esewaPayPage);
+router.get("/payments/esewa/success/:transactionUuid", paymentCtrl.esewaSuccess);
+router.get("/payments/esewa/failure/:transactionUuid", paymentCtrl.esewaFailure);
+router.get("/payments/result", paymentCtrl.resultPage);
 
 //Seller: my shop (the upload runs AFTER the login and role check)
 sellerRouter.get("/shop", shopCtrl.getMyShop);
@@ -116,6 +124,11 @@ adminRouter.patch("/products/:productId", validateBody(ProductReviewSchema), pro
 adminRouter.get("/orders", orderCtrl.getAllOrdersForAdmin);
 adminRouter.get("/orders/:orderId", orderCtrl.getOrderDetailForAdmin);
 
+//Admin:payment
+adminRouter.get("/payments", paymentCtrl.getPayments);
+adminRouter.get("/refunds", paymentCtrl.getRefunds);
+adminRouter.patch("/refunds/:shopOrderId", validateBody(RefundDoneSchema), paymentCtrl.markRefunded);
+
 //Customer: cart, checkout and orders
 customerRouter.get("/cart", cartCtrl.getCart);
 customerRouter.post("/cart/items", validateBody(CartAddSchema), cartCtrl.addItem);
@@ -136,6 +149,8 @@ customerRouter.delete("/shops/:slug/follow", engagementCtrl.unfollowShop);
 customerRouter.post("/products/:productId/reviews", validateBody(ReviewCreateSchema), reviewCtrl.createReview);
 customerRouter.patch("/reviews/:reviewId", validateBody(ReviewUpdateSchema), reviewCtrl.updateMyReview);
 customerRouter.delete("/reviews/:reviewId", reviewCtrl.deleteMyReview);
+customerRouter.post("/orders/:orderId/pay/esewa", paymentCtrl.startEsewaPayment);
+
 
 
 

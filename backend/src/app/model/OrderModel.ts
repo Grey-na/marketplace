@@ -25,7 +25,7 @@ const OrderSchema = new Schema({
         status: { type: String, enum: ["pending", "paid", "failed", "refunded"], default: "pending" },
         txnId: { type: String, default: null },
     },
-    status: { type: String, enum: ["placed", "processing", "completed", "cancelled"], default: "placed" },
+        status: { type: String, enum: ["awaiting_payment", "placed", "processing", "completed", "cancelled"], default: "placed" },
 }, {
     timestamps: true,
 });

@@ -28,8 +28,8 @@ export const syncOrderStatus = async (orderId: mongoose.Types.ObjectId) => {
         status = "cancelled";
     }else if(active.every((parcel) => parcel.status === "delivered")){
         status = "completed";
-    }else if(active.some((parcel) => parcel.status !== "pending")){
-        status = "processing";
+    }else if(active.some((parcel) => !["pending", "awaiting_payment"].includes(parcel.status))){
+    status = "processing";
     }else{
         status = "placed";
     }
@@ -90,11 +90,26 @@ export const changeShopOrderStatus = async (options: ChangeOptions) => {
         throw new ApiError("This order was just changed. Please refresh and try again.", 409)
     }
 
-    // 4. follow-up work
+        // 4. follow-up work
     if(to === "cancelled"){
+            if(to === "cancelled"){
         await restoreStock(updated.items)
+
+        // a PAID online parcel needs its money back: the admin refunds it in the eSewa merchant portal
+        if(current.status !== "awaiting_payment"){
+            const order = await OrderModel.findById(updated.order, { payment: 1 }).lean();
+            const payment = order?.payment;
+            if(payment && payment.method !== "cod" && payment.status === "paid"){
+                await ShopOrderModel.updateOne(
+                    { _id: updated._id },
+                    { $set: { "refund.status": "pending", "refund.amount": updated.total } }
+                )
+            }
+        }
     }
     await syncOrderStatus(updated.order)
 
     return updated;
 }
+}
+    

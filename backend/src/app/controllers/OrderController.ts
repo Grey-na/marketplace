@@ -135,7 +135,8 @@ export default class OrderController{
 
             const filter: Record<string, unknown> = { shop: shopId };
             if(req.query.status){
-                filter.status = String(req.query.status).toLowerCase();
+                    const wanted = req.query.status ? String(req.query.status).toLowerCase() : null;
+                    filter.status = wanted && wanted !== "awaiting_payment" ? wanted : { $ne: "awaiting_payment" };
             }
 
             const { page, limit, skip } = getPagination(req, 20, 100);
@@ -164,7 +165,7 @@ export default class OrderController{
             const user = req.loggedInUser as IUserDetail;
             const shopId = await getMyShopId(user._id);
 
-            const shopOrder = await ShopOrderModel.findOne({ _id: req.params.shopOrderId as string, shop: shopId })
+                const shopOrder = await ShopOrderModel.findOne({ _id: req.params.shopOrderId as string, shop: shopId, status: { $ne: "awaiting_payment" } })
                 .populate("order", ORDER_FIELDS)
                 .lean();
             if(!shopOrder){

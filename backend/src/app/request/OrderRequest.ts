@@ -9,7 +9,7 @@ export const CheckoutSchema = z.object({
         street: z.string().trim().min(3, "Street or area is required").max(150),
         landmark: z.string().trim().max(100).optional(),
     }),
-    paymentMethod: z.enum(PAYMENT_METHODS, "Only cash on delivery is available right now"),
+        paymentMethod: z.enum(PAYMENT_METHODS, "Payment method must be cod or esewa"),
     note: z.string().trim().max(300, "Note must be at most 300 characters").optional(),
 })
 export type CheckoutInput = z.infer<typeof CheckoutSchema>;
@@ -29,4 +29,9 @@ export const ShopOrderStatusSchema = z.object({
 // customer: cancel a parcel
 export const CustomerCancelSchema = z.object({
     reason: z.string().trim().max(300, "Reason must be at most 300 characters").optional(),
+})
+
+// admin: mark a refund as done (after refunding in the eSewa merchant portal)
+export const RefundDoneSchema = z.object({
+    note: z.string().trim().max(300, "Note must be at most 300 characters").optional(),
 })
