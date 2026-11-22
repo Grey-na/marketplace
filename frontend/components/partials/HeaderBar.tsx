@@ -10,6 +10,7 @@ import { SITE_NAME } from "@/lib/site";
 import type { CategoryLite } from "@/types/api";
 import UserMenu from "./UserMenu";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useCart } from "@/components/cart/CartProvider";
 
 const NAV = [
   { href: "/products", label: "Discover" },
@@ -26,7 +27,7 @@ export default function HeaderBar({ categories }: { categories: CategoryLite[] }
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const { user, loading, logout } = useAuth();
-  const cartCount = 0; // becomes real when we build the cart (F7)
+    const { count: cartCount } = useCart();
 
   // hide while scrolling down, show again while scrolling up
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -54,7 +55,7 @@ export default function HeaderBar({ categories }: { categories: CategoryLite[] }
     if (!text) return;
     setSearchOpen(false);
     setMenuOpen(false);
-    router.push(`/search?q=${encodeURIComponent(text)}`);
+     router.push(`/products?search=${encodeURIComponent(text)}`);
   };
 
   return (

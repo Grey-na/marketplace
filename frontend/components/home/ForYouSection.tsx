@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ProductCard from "@/components/product/ProductCard";
+import ProductCard from "@/components/ui/product/ProductCard";
 import SectionHeading from "@/components/home/SectionHeading";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { apiFetch } from "@/lib/client-api";

@@ -46,3 +46,26 @@ export type User = {
   phone?: string;
   status?: string;
 };
+
+// a whole product, for the product page
+export type ProductDetailData = ProductCardData & {
+  summary: string;
+  description?: string | null;
+  brand?: string | null;
+  tags: string[];
+  attributes: { name: string; values: string[] }[];
+  highlights: string[];
+  shippingPolicy?: string | null;
+  returnPolicy?: string | null;
+  shop: ShopCardData | null;
+};
+
+export type ReviewData = {
+  _id: string;
+  rating: number;
+  comment?: string | null;
+  createdAt: string;
+  user: { fullName: string } | null;
+};
+
+export type ReviewsResult = { ratingAvg: number; ratingCount: number; reviews: ReviewData[] };
