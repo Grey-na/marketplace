@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import CardLink from "./CardLink";
 import TiltCard from "@/components/ui/TiltCard";
 import { formatPrice }from "@/lib/format";
 import { frameFor } from "@/lib/frames";
@@ -16,7 +16,8 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
 
   return (
     <TiltCard>
-      <Link
+      <CardLink
+      productId={product._id}
         href={`/products/${product.slug}`}
         className={`group block rounded-frame p-2.5 transition duration-300 hover:shadow-sticker ${frameFor(product.category?.color)}`}
       >
@@ -55,7 +56,7 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
             )}
           </div>
         </div>
-      </Link>
+      </CardLink>
     </TiltCard>
   );
 }
