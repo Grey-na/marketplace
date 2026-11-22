@@ -8,6 +8,8 @@ import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { frameFor } from "@/lib/frames";
 import { SITE_NAME } from "@/lib/site";
 import type { CategoryLite } from "@/types/api";
+import UserMenu from "./UserMenu";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 const NAV = [
   { href: "/products", label: "Discover" },
@@ -23,6 +25,7 @@ export default function HeaderBar({ categories }: { categories: CategoryLite[] }
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const { user, loading, logout } = useAuth();
   const cartCount = 0; // becomes real when we build the cart (F7)
 
   // hide while scrolling down, show again while scrolling up
@@ -132,12 +135,20 @@ export default function HeaderBar({ categories }: { categories: CategoryLite[] }
               )}
             </Link>
 
-            <Link href="/login" className="btn-sticker ml-1 hidden !px-4 !py-1.5 text-sm md:inline-flex">
-              Log in
-            </Link>
-            <Link href="/login" aria-label="Log in" className={`${iconButton} md:hidden`}>
-              <User size={19} />
-            </Link>
+                        {loading ? (
+              <span className="ml-1 h-10 w-24 animate-pulse rounded-full bg-charcoal/10" />
+            ) : user ? (
+              <UserMenu user={user} onLogout={logout} />
+            ) : (
+              <>
+                <Link href="/login" className="btn-sticker ml-1 hidden !px-4 !py-1.5 text-sm md:inline-flex">
+                  Log in
+                </Link>
+                <Link href="/login" aria-label="Log in" className={`${iconButton} md:hidden`}>
+                  <User size={19} />
+                </Link>
+              </>
+            )}
 
             <button onClick={() => setMenuOpen(true)} aria-label="Open menu" aria-expanded={menuOpen} className={`${iconButton} md:hidden`}>
               <Menu size={21} />
@@ -203,9 +214,22 @@ export default function HeaderBar({ categories }: { categories: CategoryLite[] }
               </div>
             )}
 
-            <Link href="/login" onClick={() => setMenuOpen(false)} className="btn-sticker mt-10 w-full bg-butter">
-              Log in or sign up
-            </Link>
+                        {user ? (
+              <button
+                onClick={async () => {
+                  setMenuOpen(false);
+                  await logout();
+                  router.push("/");
+                }}
+                className="btn-sticker mt-10 w-full bg-paper"
+              >
+                Log out ({user.fullName.split(" ")[0]})
+              </button>
+            ) : (
+              <Link href="/login" onClick={() => setMenuOpen(false)} className="btn-sticker mt-10 w-full bg-butter">
+                Log in or sign up
+              </Link>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

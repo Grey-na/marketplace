@@ -21,3 +21,14 @@ export type ProductCardData = {
   shop: ShopLite | null;
   reason?: string;          // why we show it: trending, fresh_find, hidden_gem, similar ...
 };
+
+export type UserRole = "admin" | "customer" | "seller";
+
+export type User = {
+  _id: string;
+  fullName: string;
+  username: string;      // the email
+  role: UserRole;
+  phone?: string;
+  status?: string;
+};

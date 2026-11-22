@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import CustomCursor from "@/components/ui/CustomCursor";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 
 // big editorial headings
 const displayFont = Instrument_Serif({
@@ -26,8 +27,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`}>
       <body className="min-h-screen bg-dots antialiased">
-        <CustomCursor/>
-        {children}
+        <CustomCursor />
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
