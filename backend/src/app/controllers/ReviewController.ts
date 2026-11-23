@@ -176,4 +176,25 @@ export default class ReviewController{
             next(exception)
         }
     }
+
+        /**
+     * @description Customer: the reviews I have written
+     */
+    async getMyReviews(req: Request, res: Response, next: NextFunction){
+        try{
+            const user = req.loggedInUser as IUserDetail;
+            const reviews = await ReviewModel.find(
+                { user: user._id },
+                { product: 1, rating: 1, comment: 1, createdAt: 1 },
+                { sort: { createdAt: -1 }, limit: 100 }
+            ).lean();
+
+            res.json({
+                result: reviews,
+                message: "My Reviews",
+            })
+        }catch(exception){
+            next(exception)
+        }
+    }
 }

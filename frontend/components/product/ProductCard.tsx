@@ -1,5 +1,5 @@
 import Image from "next/image";
-import CardLink from "../../product/CardLink";
+import CardLink from "./CardLink";
 import TiltCard from "@/components/ui/TiltCard";
 import { formatPrice }from "@/lib/format";
 import { frameFor } from "@/lib/frames";

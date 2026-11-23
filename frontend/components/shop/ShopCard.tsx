@@ -2,11 +2,11 @@ import Link from "next/link";
 import RemoteImage from "@/components/ui/RemoteImage";
 import type { ShopCardData } from "@/types/api";
 
-export default function ShopCard({ shop }: { shop: ShopCardData }) {
+export default function ShopCard({ shop, fluid = false }: { shop: ShopCardData; fluid?: boolean }) {
   return (
     <Link
       href={`/shops/${shop.slug}`}
-      className="group block w-72 shrink-0 snap-start rounded-frame border-2 border-charcoal bg-paper p-2.5 shadow-sticker transition duration-300 hover:-translate-y-1 hover:-rotate-1"
+     className={`group block rounded-frame border-2 border-charcoal bg-paper p-2.5 shadow-sticker transition duration-300 hover:-translate-y-1 hover:-rotate-1 ${fluid ? "w-full" : "w-72 shrink-0 snap-start"}`}
     >
       <div className="relative h-32 overflow-hidden rounded-inner bg-pink/40">
         {shop.cover?.url && (

@@ -3,7 +3,7 @@ import CategoryIslands from "@/components/home/CategoryIslands";
 import ForYouSection from "@/components/home/ForYouSection";
 import Hero from "@/components/home/Hero";
 import SectionHeading from "@/components/home/SectionHeading";
-import ProductCard from "@/components/ui/product/ProductCard";
+import ProductCard from "@/components/product/ProductCard";
 import ShopCard from "@/components/shop/ShopCard";
 import Marquee from "@/components/ui/Marquee";
 import Reveal from "@/components/ui/Reveal";

@@ -150,7 +150,9 @@ customerRouter.post("/products/:productId/reviews", validateBody(ReviewCreateSch
 customerRouter.patch("/reviews/:reviewId", validateBody(ReviewUpdateSchema), reviewCtrl.updateMyReview);
 customerRouter.delete("/reviews/:reviewId", reviewCtrl.deleteMyReview);
 customerRouter.post("/orders/:orderId/pay/esewa", paymentCtrl.startEsewaPayment);
+customerRouter.get("/shops/:slug/follow", engagementCtrl.getFollowStatus);
 
+customerRouter.get("/reviews", reviewCtrl.getMyReviews);
 
 
 

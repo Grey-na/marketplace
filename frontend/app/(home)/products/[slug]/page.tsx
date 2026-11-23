@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Band from "@/components/home/Band";
 import SectionHeading from "@/components/home/SectionHeading";
 import AddToCart from "@/components/product/AddToCart";
-import ProductCard from "@/components/ui/product/ProductCard";
+import ProductCard from "@/components/product/ProductCard";
 import ProductGallery from "@/components/product/ProductGallery";
 import ReviewList from "@/components/product/ReviewList";
 import ViewTracker from "@/components/product/ViewTracker";
@@ -100,7 +100,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div>
             {shop && (
               <Link
-                href={`/shops/${shop.slug}`}
+                href={`/shops/${shop.slug}?focus=${encodeURIComponent(product.slug)}`}
                 className="inline-flex items-center gap-3 rounded-full border-2 border-charcoal bg-paper py-1.5 pl-1.5 pr-4 shadow-sticker-sm transition hover:-rotate-1"
               >
                 <span className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-charcoal bg-butter">
@@ -220,7 +220,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <SectionHeading
             eyebrow="Same shop"
             title={<>More from <em>{shop.name}</em></>}
-            href={`/shops/${shop.slug}`}
+            href={`/shops/${shop.slug}?focus=${encodeURIComponent(product.slug)}`}
             linkLabel="Visit the shop"
           />
           <div className="grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-7">

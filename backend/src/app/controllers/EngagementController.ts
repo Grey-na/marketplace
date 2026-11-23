@@ -196,4 +196,25 @@ export default class EngagementController{
             next(exception)
         }
     }
+
+        /**
+     * @description Customer: do I follow this shop?
+     */
+    async getFollowStatus(req: Request, res: Response, next: NextFunction){
+        try{
+            const user = req.loggedInUser as IUserDetail;
+            const shop = await ShopModel.findOne({ slug: req.params.slug as string, status: "approved" }, { _id: 1 }).lean();
+            if(!shop){
+                throw new ApiError("Shop not found", 404)
+            }
+            const follows = await FollowModel.exists({ user: user._id, shop: shop._id });
+
+            res.json({
+                result: { following: Boolean(follows) },
+                message: "Follow status",
+            })
+        }catch(exception){
+            next(exception)
+        }
+    }
 }

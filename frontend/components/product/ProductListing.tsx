@@ -1,7 +1,7 @@
 import Link from "next/link";
 import FilterToggle from "./FilterToggle";
 import Pagination from "./Pagination";
-import ProductCard from "../ui/product/ProductCard";
+import ProductCard from "./ProductCard";
 import ProductFilters from "./ProductFilters";
 import { apiGet } from "@/lib/api";
 import { apiQuery, pageHref, parseListing } from "@/lib/listing";
