@@ -26,6 +26,9 @@ import { ReviewCreateSchema, ReviewUpdateSchema, TrackSchema } from "../app/requ
 import RecommendationController from "../app/controllers/RecommendationController";
 import PaymentController from "../app/controllers/PaymentController";
 import { RefundDoneSchema } from "../app/request/OrderRequest";   // add to your existing OrderRequest import
+import DashboardController from "../app/controllers/DashboardController";
+import UserController from "../app/controllers/UserController";
+import { UserStatusSchema } from "../app/request/AdminUserRequest";
 
 
 const router: Router = Router();
@@ -53,6 +56,8 @@ const reviewCtrl = new ReviewController();
 const interactionCtrl = new InteractionController();
 const recommendationCtrl = new RecommendationController();
 const paymentCtrl = new PaymentController();
+const dashboardCtrl = new DashboardController();
+const userCtrl = new UserController();
 
 // two image fields in one request: logo and cover
 const shopImages = Uploader("/shops").fields([
@@ -103,6 +108,7 @@ sellerRouter.delete("/products/:productId/images/:filename", productCtrl.deleteP
 sellerRouter.get("/orders", orderCtrl.getSellerOrders);
 sellerRouter.get("/orders/:shopOrderId", orderCtrl.getSellerOrderDetail);
 sellerRouter.patch("/orders/:shopOrderId/status", validateBody(ShopOrderStatusSchema), orderCtrl.updateShopOrderStatus);
+sellerRouter.get("/stats", dashboardCtrl.getSellerStats);
 
 
 //Admin: categories
@@ -129,6 +135,10 @@ adminRouter.get("/payments", paymentCtrl.getPayments);
 adminRouter.get("/refunds", paymentCtrl.getRefunds);
 adminRouter.patch("/refunds/:shopOrderId", validateBody(RefundDoneSchema), paymentCtrl.markRefunded);
 
+
+adminRouter.get("/stats", dashboardCtrl.getAdminStats);
+adminRouter.get("/users", userCtrl.getAllUsers);
+adminRouter.patch("/users/:userId/status", validateBody(UserStatusSchema), userCtrl.updateUserStatus);
 //Customer: cart, checkout and orders
 customerRouter.get("/cart", cartCtrl.getCart);
 customerRouter.post("/cart/items", validateBody(CartAddSchema), cartCtrl.addItem);
