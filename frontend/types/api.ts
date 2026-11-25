@@ -159,3 +159,58 @@ export type OrderSummary = {
 };
 
 export type MyReview = { _id: string; product: string; rating: number; comment?: string | null };
+
+export type SellerShop = {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  logo?: { url: string } | null;
+  cover?: { url: string } | null;
+  contact?: { phone?: string; email?: string | null; address?: string | null };
+  businessRegNo?: string | null;
+  status: string;                 // pending, approved, rejected, suspended
+  rejectionReason?: string | null;
+  isVerified: boolean;
+  followerCount: number;
+  ratingAvg: number;
+  ratingCount: number;
+};
+
+export type SellerStats = {
+  shop: { _id: string; name: string; slug: string; status: string; followerCount: number; ratingAvg: number; ratingCount: number };
+  products: { total: number; active: number; lowStock: { _id: string; title: string; slug: string; stock: number }[] };
+  orders: Record<string, number>;
+  sales: { earned: number; inProgress: number };
+  daily: { date: string; orders: number; revenue: number }[];
+  topProducts: { productId: string; title: string; slug?: string; image?: string | null; units: number; revenue: number }[];
+};
+
+export type SellerProduct = {
+  _id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  description?: string | null;
+  price: number;
+  discount: number;
+  afterDiscount: number;
+  stock: number;
+  brand?: string | null;
+  tags: string[];
+  attributes: { name: string; values: string[] }[];
+  highlights: string[];
+  shippingPolicy?: string | null;
+  returnPolicy?: string | null;
+  images: { url: string; filename: string }[];
+  status: string;
+  isBlocked: boolean;
+  blockReason?: string | null;
+  category: string | { _id: string; title: string; slug: string; color?: string } | null;
+};
+
+// a parcel as the seller sees it: with the customer's order details
+export type SellerParcel = Omit<Parcel, "shop"> & {
+  shop: string;
+  order: { orderNo: string; address: Address; note?: string | null; payment: { method: string; status: string }; createdAt: string };
+};

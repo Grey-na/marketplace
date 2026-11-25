@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export default function CustomCursor() {
+  const pathname = usePathname();
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
   const smoothX = useSpring(x, { stiffness: 500, damping: 35, mass: 0.4 });
@@ -27,7 +29,7 @@ export default function CustomCursor() {
     return () => window.removeEventListener("pointermove", onMove);
   }, [x, y]);
 
-  if (!enabled) return null;
+  if (!enabled || pathname.startsWith("/seller") || pathname.startsWith("/admin")) return null;
 
   return (
     <motion.div

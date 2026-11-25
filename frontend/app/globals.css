@@ -50,6 +50,12 @@ body {
   .btn-sticker {
     @apply inline-flex items-center justify-center rounded-full border-2 border-charcoal bg-butter px-6 py-3 font-semibold shadow-sticker transition duration-150 hover:-translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none;
   }
+    .btn-solid {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl border-2 border-charcoal bg-charcoal px-4 py-2 text-sm font-semibold text-cream transition hover:bg-charcoal/85 disabled:opacity-60;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl border-2 border-charcoal bg-paper px-4 py-2 text-sm font-semibold transition hover:bg-butter disabled:opacity-60;
+  }
 }
 
 /* people who asked their system for less motion get (almost) none */

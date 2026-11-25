@@ -36,12 +36,14 @@ export async function apiFetch<T>(
   retried = false
 ): Promise<ApiResponse<T>> {
   const hasBody = options.body !== undefined;
+  const isForm = typeof FormData !== "undefined" && options.body instanceof FormData;
 
-  // same address as the website, so the browser sends the login cookie by itself
+  // same address as the website, so the browser sends the login cookie by itself.
+  // For files the browser sets the Content-Type itself (it needs a boundary), so we must not
   const response = await fetch(`/api${path}`, {
     method: options.method ?? "GET",
-    headers: hasBody ? { "Content-Type": "application/json" } : undefined,
-    body: hasBody ? JSON.stringify(options.body) : undefined,
+    headers: hasBody && !isForm ? { "Content-Type": "application/json" } : undefined,
+    body: !hasBody ? undefined : isForm ? (options.body as FormData) : JSON.stringify(options.body),
   });
 
   // the 15-minute cookie ran out: renew it with the refresh cookie and try the request once more
